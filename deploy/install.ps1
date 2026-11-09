@@ -3,7 +3,7 @@
 # release's SHA256SUMS, and runs it with the arguments given here
 # (deploy/README.md, "mgu-install"). Windows PowerShell 5.1 or PowerShell 7:
 #
-#   & ([scriptblock]::Create((irm https://raw.githubusercontent.com/robertnisipeanu/mgu-store/main/deploy/install.ps1))) first-install --identity $HOME\.ssh\mgu_root_key
+#   & ([scriptblock]::Create((irm https://raw.githubusercontent.com/tjmodsss/tjm-store/main/deploy/install.ps1))) first-install --identity $HOME\.ssh\mgu_root_key
 #
 # $env:MGU_INSTALL_DOWNLOAD names another folder of the same files (a URL).
 # mgu-install's exit status is left in $LASTEXITCODE (the script's exit
@@ -14,7 +14,7 @@ $ProgressPreference = 'SilentlyContinue'
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
 $base = $env:MGU_INSTALL_DOWNLOAD
-if (-not $base) { $base = 'https://github.com/robertnisipeanu/mgu-store/releases/download/installer' }
+if (-not $base) { $base = 'https://github.com/tjmodsss/tjm-store/releases/download/installer' }
 $asFile = [bool]$MyInvocation.MyCommand.Path
 
 function Fail($message) {

@@ -1,0 +1,51 @@
+# TJM Store: approves a gated component for release (release/README.md, "Gated components").
+# mgu-render and robertn_store publish a new version only when their source commit has a successful
+# release-check/<id> status. Upstream sets it after testing on a car; here this button does it.
+# Run it (Actions, Approve release) only after testing that component's current source on a car,
+# then run the Release workflow.
+name: Approve release
+
+on:
+  workflow_dispatch:
+    inputs:
+      component:
+        description: The component to approve (tested on a car)
+        required: true
+        type: choice
+        options:
+          - robertn_store
+          - mgu-render
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  approve:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # sourceCommit reads the component's history
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22.12.0
+
+      - name: Mark release-check on the component's source commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ID: ${{ inputs.component }}
+          REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          sha=$(node -e "const r = require('./release/release.js'); const c = r.components().find((x) => x.id === process.env.ID); if (!c) { process.exit(2); } process.stdout.write(r.sourceCommit(c))")
+          if [ -z "$sha" ]; then
+            echo "no source commit for $ID"
+            exit 1
+          fi
+          gh api "repos/$REPO/statuses/$sha" -f state=success -f context="release-check/$ID" -f description="approved by $ACTOR"
+          echo "release-check/$ID: success on $sha"

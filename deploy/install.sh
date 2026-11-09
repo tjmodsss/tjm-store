@@ -4,13 +4,13 @@
 # release's SHA256SUMS, and runs it with the arguments given here
 # (deploy/README.md, "mgu-install").
 #
-#   curl -fsSL https://raw.githubusercontent.com/robertnisipeanu/mgu-store/main/deploy/install.sh | sh -s -- first-install --identity ~/.ssh/mgu_root_key
+#   curl -fsSL https://raw.githubusercontent.com/tjmodsss/tjm-store/main/deploy/install.sh | sh -s -- first-install --identity ~/.ssh/mgu_root_key
 #
 # MGU_INSTALL_DOWNLOAD names another folder of the same files (a URL).
 # Exit status: mgu-install's, or 1 when it could not be fetched.
 set -u
 
-BASE=${MGU_INSTALL_DOWNLOAD:-https://github.com/robertnisipeanu/mgu-store/releases/download/installer}
+BASE=${MGU_INSTALL_DOWNLOAD:-https://github.com/tjmodsss/tjm-store/releases/download/installer}
 
 fail() {
     echo "mgu-install: $*" >&2

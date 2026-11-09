@@ -1133,6 +1133,18 @@ class Updater {
         return { id: SELF_SOURCE_ID, type: 'github', repo: this.conf.builtin_repo || 'robertnisipeanu/mgu-store', builtin: true };
     }
 
+    /* TJM Store: the GitHub repos it may install from (allowed_repos, <owner>/<repo> separated by
+     * spaces). When set, every other source (another GitHub repo, a web address, a USB stick) is
+     * left out and cannot be added. Empty: any source, as upstream. */
+    allowedRepos() {
+        return String(this.conf.allowed_repos || '').split(/\s+/).filter(Boolean).map((r) => r.toLowerCase());
+    }
+
+    sourceAllowed(def) {
+        const allowed = this.allowedRepos();
+        return !allowed.length || (!!def && def.type === 'github' && allowed.indexOf(String(def.repo || '').toLowerCase()) >= 0);
+    }
+
     /* sources.json (seeded by the installers, then written by the updater);
      * without it, the built-in source alone. The built-in source is always
      * there. A file that cannot be read leaves the built-in source alone and
@@ -1148,6 +1160,16 @@ class Updater {
         }
         if (!list.some((s) => s.builtin)) {
             list.unshift(this.builtin());
+        }
+        // TJM Store: the built-in source is always this updater's own builtin_repo (a unit that had
+        // another Store keeps its sources.json, whose built-in source named that Store's repo)
+        if (this.allowedRepos().length) {
+            list = list.map((s) => (s.builtin && s.repo !== this.builtin().repo ? Object.assign({}, s, { repo: this.builtin().repo }) : s));
+        }
+        const outside = list.filter((s) => !s.builtin && !this.sourceAllowed(s));
+        if (outside.length) {
+            console.log(`sources: not allowed here, left out: ${outside.map((s) => sourcesLib.label(s)).join(', ')}`);
+            list = list.filter((s) => s.builtin || this.sourceAllowed(s));
         }
         this.stored = list;
         list.forEach((def) => this.addRuntime(def));
@@ -1991,7 +2013,8 @@ class Updater {
     /* The USB media mounted now (README.md, "USB media"). Returns true when
      * the list changed; new ones are read. */
     scanUsb() {
-        const found = sourcesLib.usbSources(this.conf.mounts || '/proc/mounts', String(this.conf.usb_roots || '/media').split(/[\s,]+/).filter(Boolean))
+        // TJM Store (allowed_repos set): no USB sticks, only its own GitHub sources
+        const found = this.allowedRepos().length ? [] : sourcesLib.usbSources(this.conf.mounts || '/proc/mounts', String(this.conf.usb_roots || '/media').split(/[\s,]+/).filter(Boolean))
             .map((u) => Object.assign({ id: u.id, type: 'usb', label: u.label, root: u.root }, u.loose ? { loose: true } : {}));
         const key = (l) => l.map((u) => `${u.id}\0${u.root}\0${!!u.loose}`).join('\n');
         if (key(found) === key(this.usb)) {
@@ -3588,6 +3611,9 @@ class Updater {
     /* want: the id to give it when that is free (else a random one). */
     sourceAdd(req, want) {
         let def;
+        if (!this.sourceAllowed(req)) {
+            return 'this Store installs only from its own sources';
+        }
         if (req.type === 'github') {
             if (!sourcesLib.REPO.test(req.repo || '')) {
                 return 'repo must be <owner>/<repo>';

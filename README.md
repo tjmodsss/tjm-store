@@ -1,3 +1,33 @@
+# TJM Store
+
+TJM's app store for BMW iDrive 7 head units (MGU): the **TJM Store** tile on the car's Apps screen
+installs and updates the TJM apps, and only them. Its sources are locked to TJM's own GitHub
+repositories (`native/mgu-updater/updater.conf`, `allowed_repos`):
+
+| Repository | What the Store installs from it |
+|---|---|
+| [tjmodsss/tjm-store](https://github.com/tjmodsss/tjm-store) | the Store itself and its head-unit tools (this repository's releases) |
+| [tjmodsss/tjm-apps](https://github.com/tjmodsss/tjm-apps) | the TJM apps (built on the head unit from the repository) |
+| [tjmodsss/tjm-waze](https://github.com/tjmodsss/tjm-waze) | TJM Waze Cluster, the Waze tool and the cluster renderer (releases) |
+| [tjmodsss/tjm-extras](https://github.com/tjmodsss/tjm-extras) | TJM RideTube, TJM Moonride, TJM RideWatch, TJM Browser and their native parts (releases) |
+
+No other GitHub repository, web address or USB stick can be added.
+
+Install it from the TJM Multi-Car Installer (tick **TJM Store**), or from a computer with Node 18+:
+
+```sh
+node deploy/mgu-install.js first-install --identity <the head unit's root key>
+```
+
+Based on [mgu-store](https://github.com/robertnisipeanu/mgu-store) by Robert Nisipeanu and
+contributors, GPL-3.0 (`LICENSE`). TJM's changes: the Store's name and icon, its sources locked to
+the repositories above (`js/updater.js` `allowedRepos`), no GitHub sign-in app, an "Approve
+release" workflow for the gated components. Instagram [@tareqmods](https://www.instagram.com/tareqmods/).
+
+---
+
+## The original mgu-store README
+
 # mgu-store
 
 An app store for BMW iDrive 7 and iDrive 8 head units (MGU). Browse,

@@ -1,7 +1,7 @@
 'use strict';
 /**
  * Where release.js publishes, chosen by MGU_PUBLISH (default
- * github:robertnisipeanu/mgu-store):
+ * github:tjmodsss/tjm-store):
  *
  *   github:<owner>/<repo>  GitHub Releases of the repository: each version
  *                          is the release <id>@<version> with its artifact
@@ -27,7 +27,7 @@ const path = require('path');
 const cp = require('child_process');
 const crypto = require('crypto');
 
-const TARGET = process.env.MGU_PUBLISH || 'github:robertnisipeanu/mgu-store';
+const TARGET = process.env.MGU_PUBLISH || 'github:tjmodsss/tjm-store';
 const REPO = path.join(__dirname, '..');
 const KIND = TARGET.slice(0, TARGET.indexOf(':'));
 const WHERE = KIND === 'dir' ? path.resolve(REPO, TARGET.slice(TARGET.indexOf(':') + 1)) : TARGET.slice(TARGET.indexOf(':') + 1);

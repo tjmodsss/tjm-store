@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- TJM Store: `allowed_repos` (updater.conf) names the only GitHub repos the updater installs from. When set, any other source in `sources.json`, a web address or a USB stick is left out, a new one is refused, and the built-in source is always `builtin_repo`. Empty: as before.
+- TJM Store: the built-in source, the default sources and the allowed repos are the TJM repos; no GitHub sign-in app.
+
 ## 0.8.35
 
 - Lost apps are installed again only while the app manager runs on a data folder of its own: not while it has not started or created its home after a factory reset. The updater looks again when it comes up.

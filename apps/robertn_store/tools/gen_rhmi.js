@@ -338,7 +338,7 @@ function uiDescription(hmi) {
 /* The words behind the string ids, by id: the tile's and every state's and
  * component's own. */
 function english() {
-    const out = { SID_TEMP_EMPTY: '', SID_STORE_TITLE: 'Store' };
+    const out = { SID_TEMP_EMPTY: '', SID_STORE_TITLE: 'TJM Store' };
     ['ID7', 'ID8'].forEach((hmi) => statesFor(hmi).forEach((s) => {
         [s.titleText].concat(s.components.map((c) => c.text))
             .filter(Boolean).forEach((t) => { out[sid(t)] = t; });

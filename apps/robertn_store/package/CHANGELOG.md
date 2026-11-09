@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-No changes.
+- TJM Store: the tile and the screens' title read "TJM Store" in every language, with the TJM icon.
 
 ## 0.9.33
 
