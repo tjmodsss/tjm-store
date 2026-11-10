@@ -2,9 +2,9 @@
 
 ## Unreleased
 
-- TJM Store: the tile and the screens' title read "TJM Store" in every language, with the TJM icon.
-
 ## 0.9.33
+
+- TJM Store: the tile and the screens' title read "TJM Store" in every language, with the TJM icon.
 
 Text with ‘ ’ “ ” or a no-break space, such as an iPhone hotspot named
 Alex’s iPhone, shows them as plain quotes and a space where the font has
