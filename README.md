@@ -259,7 +259,7 @@ A car without the Store yet installs it from the same folder, with no
 internet at the car:
 
 ```sh
-node mgu-install.js first-install --from <stick>/mgu-repo/mgu-store --identity <key>
+node mgu-install.js first-install --from <stick>/mgu-repo/tjm-store --identity <key>
 ```
 
 ## Publishing your apps

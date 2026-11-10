@@ -24,7 +24,7 @@
  * (not under CI, nor with --no-restart-prompt).
  *
  * first-install --from <folder> installs from a folder usb-repo wrote
- * (<folder>/mgu-repo/mgu-store) instead of GitHub, each file checked
+ * (<folder>/mgu-repo/<store repository name>) instead of GitHub, each file checked
  * against its catalog the same way: download at home, install at the car
  * without internet.
  *
@@ -879,13 +879,13 @@ function deployToolFiles(artifact) {
     }).concat([{ name: 'component.json', data: members.get('component.json').data, mode: 0o644 }]);
 }
 
-/* first-install --from: a folder usb-repo wrote (<folder>/mgu-repo/mgu-store). */
+/* first-install --from: a folder usb-repo wrote (<folder>/mgu-repo/<store repository name>). */
 function fromFolder(dir) {
     const d = path.resolve(dir);
     if (!fs.existsSync(path.join(d, 'catalog.json'))) {
-        const inner = path.join(d, 'mgu-repo', 'mgu-store');
+        const inner = path.join(d, 'mgu-repo', STORE_REPO.split('/')[1]);
         throw new Usage(fs.existsSync(path.join(inner, 'catalog.json')) ? `--from: no catalog.json in ${d}; use --from ${inner}` :
-            `--from: no catalog.json in ${d}; give the folder usb-repo wrote, <folder>/mgu-repo/mgu-store`);
+            `--from: no catalog.json in ${d}; give the folder usb-repo wrote, <folder>/mgu-repo/${STORE_REPO.split('/')[1]}`);
     }
     return d;
 }

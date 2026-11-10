@@ -354,7 +354,7 @@ deploy tool run of this boot holds its lock, and none is taken when
 run in. Exit status: 0 done, 1 failed, 2 refused (the coding, or the deploy tool's own).
 
 **first-install --from <folder>** takes the component list from a folder
-`usb-repo` wrote (`<folder>/mgu-repo/mgu-store`: its `catalog.json` and the
+`usb-repo` wrote (`<folder>/mgu-repo/tjm-store`: its `catalog.json` and the
 artifacts beside it) instead of the `catalog` release. Nothing is
 downloaded; each artifact is checked against the catalog's size and sha256
 as it is read, before anything is sent, and the rest is the same. The
@@ -364,7 +364,7 @@ only away from the car:
 
 ```sh
 node mgu-install.js usb-repo <folder>                                                   # at home
-node mgu-install.js first-install --from <folder>/mgu-repo/mgu-store --identity <key>   # at the car
+node mgu-install.js first-install --from <folder>/mgu-repo/tjm-store --identity <key>   # at the car
 ```
 
 Before installing, the car is parked, on stable power (engine running or a

@@ -7019,8 +7019,9 @@ function testMguInstallUsb() {
         const opts = { bin, api: gh.api, env: { FAKE_GH_TOKEN: TOKEN } };
         let r = mguInstall(['usb-repo', stick, `github:${STORE_REPO}`, 'github:third/rel', pub, co].concat(pkgs), opts);
         const repo = path.join(stick, 'mgu-repo');
+        const storeDir = STORE_REPO.split('/')[1];   // the Store's own release folder is named after its repository
         check('mgu-install usb-repo: one folder per input, package files together in local/', r.status === 0 &&
-            fs.readdirSync(repo).sort().join() === 'checkout,dir-publish,local,mgu-store,rel', `${r.out}\n${fs.existsSync(repo) && fs.readdirSync(repo)}`);
+            fs.readdirSync(repo).sort().join() === ['checkout', 'dir-publish', 'local', storeDir, 'rel'].sort().join(), `${r.out}\n${fs.existsSync(repo) && fs.readdirSync(repo)}`);
         const reqs = gh.requests();
         check('mgu-install usb-repo: the GitHub CLI\'s token for the private repo, only to the API host', reqs.some((x) => x.auth === `Bearer ${TOKEN}`) &&
             reqs.filter((x) => x.path.startsWith('/blob/')).every((x) => x.auth === null) &&
@@ -7042,8 +7043,8 @@ function testMguInstallUsb() {
         check('mgu-install usb-repo: the updater reads every folder, and every artifact matches its listed size and sha256 (unit Node)',
             Object.keys(seen).length === 5 && allOk, JSON.stringify(seen));
         check('mgu-install usb-repo: a published catalog keeps its schema-2 fields',
-            ids('mgu-store') === `app-privacy@${rel.entries[1].version} mgu-deploy@${VERSION} mgu-render@0.1.0 mgu-updater@0.2.0 mgu-uplink@0.4.0 robertn_store@${rel.entries[4].version}:unit`,
-            ids('mgu-store'));
+            ids(storeDir) === `app-privacy@${rel.entries[1].version} mgu-deploy@${VERSION} mgu-render@0.1.0 mgu-updater@0.2.0 mgu-uplink@0.4.0 robertn_store@${rel.entries[4].version}:unit`,
+            ids(storeDir));
         const relCat = JSON.parse(fs.readFileSync(path.join(repo, 'rel', 'catalog.json'), 'utf8'));
         check('mgu-install usb-repo: a releases-mode repo gets a catalog: the newest of each id, the .tgz over the .mgu, titles from mgu-store.json',
             ids('rel') === 'mgu_only@0.1.0 rel_app@1.1.0' && relCat.components.find((c) => c.id === 'rel_app').title === 'Release App' &&
@@ -7055,9 +7056,9 @@ function testMguInstallUsb() {
         const marker = (name) => (fs.existsSync(path.join(repo, name, 'mgu-copy.json')) ?
             JSON.parse(fs.readFileSync(path.join(repo, name, 'mgu-copy.json'), 'utf8')).copyOf : null);
         check('mgu-install usb-repo: a published source\'s folder, and a clone of a GitHub repository, names the source it is a copy of; the updater reads it',
-            marker('mgu-store') === `github:${STORE_REPO}` && marker('rel') === 'github:third/rel' && src('mgu-store').copyOf === `github:${STORE_REPO}` &&
+            marker(storeDir) === `github:${STORE_REPO}` && marker('rel') === 'github:third/rel' && src(storeDir).copyOf === `github:${STORE_REPO}` &&
             marker('checkout') === 'github:cauliflowermossgrape/idrive7-apps' && src('checkout').copyOf === marker('checkout') &&
-            [marker('dir-publish'), marker('local')].every((m) => m === null), JSON.stringify([marker('mgu-store'), src('mgu-store').copyOf, marker('checkout')]));
+            [marker('dir-publish'), marker('local')].every((m) => m === null), JSON.stringify([marker(storeDir), src(storeDir).copyOf, marker('checkout')]));
         check('mgu-install usb-repo: package files by their content: an app, a .mgu, a tool kit and a source package built on the unit',
             ids('local') === 'loose-tool@0.3.0 loose_app@1.0.0 mgu_app@2.0.0 robertn_demo@1.0.0:unit', ids('local'));
         // again: a newer and an older package; the newer replaces, the older leaves the newer
@@ -7107,7 +7108,7 @@ function testMguInstallFrom() {
         const stick = path.join(fs.mkdtempSync(path.join(T, 'from-')), 'MY STICK');
         fs.mkdirSync(stick);
         let r = mguInstall(['usb-repo', stick], { bin: installBin(null), api: gh.api, env: { FAKE_GH_TOKEN: TOKEN } });
-        const from = path.join(stick, 'mgu-repo', 'mgu-store');
+        const from = path.join(stick, 'mgu-repo', STORE_REPO.split('/')[1]);
         check('mgu-install usb-repo: writes the release as a folder for --from', r.status === 0 &&
             fs.existsSync(path.join(from, 'catalog.json')), r.out);
         const root = donorRoot();
