@@ -8,7 +8,9 @@
  * private repo's), catalog (the index of the catalog release's
  * catalog.json, or absent), releases: [{ draft, prerelease, assets:
  * [{ name, n }] }] } } }. Asset n is /repos/<o>/<r>/releases/assets/<n>,
- * which redirects to localhost (another host) for files[n]. Writes its port
+ * which redirects to localhost (another host) for files[n]; fail: { "<n>":
+ * ["500" | "cut", ...] } breaks file n's next downloads (an HTTP 500, or
+ * the connection cut halfway), one each. Writes its port
  * to <port file> once listening; each request is a JSON line in <log>
  * ({ path, auth, accept }).
  */
@@ -16,6 +18,7 @@ const fs = require('fs');
 const http = require('http');
 
 const [configFile, log, portFile] = process.argv.slice(2);
+const failed = {};   // config.fail answers given so far, by file
 
 const server = http.createServer((req, res) => {
     const config = JSON.parse(fs.readFileSync(configFile, 'utf8'));
@@ -28,7 +31,19 @@ const server = http.createServer((req, res) => {
     };
     const blob = /^\/blob\/(\d+)$/.exec(req.url);
     if (blob) {
-        return send(200, fs.readFileSync(config.files[Number(blob[1])]), 'application/octet-stream');
+        const data = fs.readFileSync(config.files[Number(blob[1])]);
+        // config.fail { "<n>": ["500" | "cut", ...] }: file n's next requests answer so, one each, then as usual
+        const left = (config.fail || {})[blob[1]] || [];
+        const used = (failed[blob[1]] || 0);
+        if (used < left.length) {
+            failed[blob[1]] = used + 1;
+            if (left[used] === '500') {
+                return send(500, '{"message":"Server Error"}');
+            }
+            res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Length': data.length });
+            return res.write(data.subarray(0, Math.floor(data.length / 2)), () => req.socket.destroy());
+        }
+        return send(200, data, 'application/octet-stream');
     }
     const m = /^\/repos\/([^/]+\/[^/]+)(\/[^?]*)?/.exec(req.url);
     const repo = m && config.repos[m[1]];

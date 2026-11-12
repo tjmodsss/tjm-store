@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `mgu-install.js` tries a GitHub download again when it breaks on the way: no connection, the connection cut while the file comes ("terminated"), or GitHub busy (HTTP 5xx or 429). Three tries in all, 2 and 4 seconds apart, each said on the screen; any other answer (a 404, a file too large) ends the install as before. The error now names the file and how many bytes had come.
+
 ## 0.8.9
 
 - A tool's new version is on disk, every file of it, before its `current` points to it, at every install and update and at the deploy tool's own; each switch of `current` is on disk before the deploy tool goes on. A power cut or ignition off right after an update leaves the version before or the new one whole, never a file the head unit had not written yet.

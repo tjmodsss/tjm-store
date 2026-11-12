@@ -211,9 +211,30 @@ function checkUrl(u) {
     throw new Usage(`not an https URL: ${u}`);
 }
 
+/* A download that broke on the way (no connection, the connection cut while
+ * the body came, GitHub busy: 5xx or 429) is tried again, GET_TRIES in all,
+ * GET_RETRY_MS apart and longer each time; any other answer is final. */
+const GET_TRIES = 3;
+const GET_RETRY_MS = Number(process.env.MGU_INSTALL_RETRY_MS || 2000);
+const retryable = (e) => Object.assign(e, { retry: true });
+
 /* GET url's body, at most max bytes. A token goes to the GitHub API host
  * only, never to a host a redirect leads to. */
-async function get(url, { token, accept, max } = {}) {
+async function get(url, opts = {}) {
+    for (let attempt = 1; ; attempt += 1) {
+        try {
+            return await getOnce(url, opts);
+        } catch (e) {
+            if (!e.retry || attempt >= GET_TRIES) {
+                throw e;
+            }
+            say(`  ${e.message}; trying again (${attempt + 1} of ${GET_TRIES})`);
+            await new Promise((done) => setTimeout(done, GET_RETRY_MS * attempt));
+        }
+    }
+}
+
+async function getOnce(url, { token, accept, max } = {}) {
     const apiHost = new URL(GITHUB_API).host;
     let u = checkUrl(url);
     for (let hop = 0; hop < 8; hop += 1) {
@@ -225,23 +246,34 @@ async function get(url, { token, accept, max } = {}) {
         try {
             res = await fetch(u, { headers, redirect: 'manual' });
         } catch (e) {
-            throw new Error(`${u.origin}${u.pathname}: ${e.cause ? e.cause.message : e.message}`);
+            throw retryable(new Error(`${u.origin}${u.pathname}: ${e.cause ? e.cause.message : e.message}`));
         }
         if ([301, 302, 303, 307, 308].includes(res.status) && res.headers.get('location')) {
             u = checkUrl(new URL(res.headers.get('location'), u));
             continue;
         }
         if (!res.ok) {
-            throw Object.assign(new Error(`${u.origin}${u.pathname}: HTTP ${res.status}`), { status: res.status });
+            const e = Object.assign(new Error(`${u.origin}${u.pathname}: HTTP ${res.status}`), { status: res.status });
+            throw res.status >= 500 || res.status === 429 ? retryable(e) : e;
         }
         const chunks = [];
         let total = 0;
-        for await (const chunk of res.body) {
-            total += chunk.length;
+        const reader = res.body[Symbol.asyncIterator]();
+        for (;;) {
+            let step;
+            try {
+                step = await reader.next();
+            } catch (e) {
+                throw retryable(new Error(`${u.origin}${u.pathname}: ${e.cause ? e.cause.message : e.message} after ${total} bytes`));
+            }
+            if (step.done) {
+                break;
+            }
+            total += step.value.length;
             if (total > (max || MAX_ARTIFACT)) {
                 throw new Error(`${u.origin}${u.pathname}: more than ${max || MAX_ARTIFACT} bytes`);
             }
-            chunks.push(Buffer.from(chunk));
+            chunks.push(Buffer.from(step.value));
         }
         return Buffer.concat(chunks);
     }

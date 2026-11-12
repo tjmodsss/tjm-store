@@ -6749,6 +6749,45 @@ function testMguInstallCoding() {
     }
 }
 
+/* first-install when GitHub's downloads break on the way (an HTTP 500, the
+ * connection cut halfway): each is tried again, 3 times in all. */
+function testMguInstallRetry() {
+    const gh = fakeGithub({ files: [], repos: {} });
+    try {
+        const rel = fakeRelease(gh.api);
+        const args = ['first-install', '--host', '10.0.0.9', '--no-uplink', '--no-renderer'];
+        const env = { MGU_INSTALL_RETRY_MS: '10' };
+        gh.set({ files: rel.files, repos: { [STORE_REPO]: { catalog: rel.catalogIndex } }, fail: { 0: ['500'], 1: ['cut', '500'] } });
+        let r = mguInstall(args, { bin: installBin(donorRoot()), api: gh.api, env });
+        const tries = (n) => gh.requests().filter((q) => q.path === `/blob/${n}`).length;
+        check('mgu-install first-install, downloads broken twice on the way: tried again and installed', r.status === 0 &&
+            (r.out.match(/; trying again \(\d of 3\)/g) || []).length === 3 && r.out.includes('HTTP 500; trying again (2 of 3)') &&
+            /after \d+ bytes; trying again \(2 of 3\)/.test(r.out) && tries(0) === 2 && tries(1) === 3, r.out.slice(-3000));
+        // a fresh fake server: its count of broken answers starts again
+        gh.stop();
+        const gh2 = fakeGithub({ files: rel.files, repos: { [STORE_REPO]: { catalog: rel.catalogIndex } }, fail: { 0: ['500', 'cut', '500'] } });
+        try {
+            const root = donorRoot();
+            const before = root.hash();
+            r = mguInstall(args, { bin: installBin(root), api: gh2.api, env });
+            check('mgu-install first-install, a download broken 3 times: fails naming it, nothing sent to the unit',
+                r.status === 1 && r.out.includes('trying again (3 of 3)') && /\/blob\/0: HTTP 500\n/.test(r.out) &&
+                root.hash().hash === before.hash, r.out.slice(-3000));
+            // a 404 is an answer, not a break: not tried again
+            gh2.set({ files: rel.files, repos: {} });
+            gh2.reset();
+            r = mguInstall(args, { bin: installBin(donorRoot()), api: gh2.api, env });
+            const paths = gh2.requests().map((q) => q.path);
+            check('mgu-install first-install, no such repository (404): not tried again', r.status !== 0 && !r.out.includes('trying again') &&
+                paths.length > 0 && new Set(paths).size === paths.length, `${r.out.slice(-2000)}\n${paths.join('\n')}`);
+        } finally {
+            gh2.stop();
+        }
+    } finally {
+        gh.stop();
+    }
+}
+
 /* first-install and token against a fake root, the release from the stand-in GitHub. */
 function testMguInstall() {
     const gh = fakeGithub({ files: [], repos: {} });
@@ -9516,6 +9555,7 @@ const SUITES = [
     testMguInstall,
     testMguInstallTiles,
     testMguInstallCoding,
+    testMguInstallRetry,
     testMguInstallUsb,
     testMguInstallFrom,
     testConnect,
