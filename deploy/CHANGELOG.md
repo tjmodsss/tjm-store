@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.8.22
+
+- While safe mode is on, a lost Store is still installed again once (`install --repair`), and safe mode stays on: the Store has the Leave safe mode button. Every other lost app stays held, and so does the Store under an updater before 0.8.47, whose repair would leave safe mode.
+
 ## 0.8.21
 
 - TJM: `mgu-install.js` seeds IterioDev/car-apps (its tags) as a source too, as the updater adds it.
