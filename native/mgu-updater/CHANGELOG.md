@@ -2,9 +2,9 @@
 
 ## Unreleased
 
-- TJM Store: upstream 0.8.48's new default source (hexlay/idrive7-system-monitor) is not taken; the TJM Store keeps its own sources (the TJM repositories and IterioDev/car-apps).
-
 ## 0.8.48
+
+- TJM Store: upstream 0.8.48's new default source (hexlay/idrive7-system-monitor) is not taken; the TJM Store keeps its own sources (the TJM repositories and IterioDev/car-apps).
 
 - Default source: hexlay/idrive7-system-monitor (System Monitor, iDrive 7 only) on its default branch, added once at the first start of this version (and seeded by the installers, `deploy/sources.json`), unless a source of that repo is there already. On iDrive 8 its app is not offered. Like any source it can be removed; once removed it is not added again.
 
