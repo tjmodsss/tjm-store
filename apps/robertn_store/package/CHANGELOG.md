@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+Upstream merge of 2026-11-21. Restart now, Restart head unit and the
+confirm step's Restart are greyed out while an install, update or removal
+runs or waits, and can be pressed again once nothing is left. The
+renderer client it carries can show NV12 video frames.
+
 ## 0.9.42
 
 Upstream merge of 2026-11-16. No change on screen: the renderer client
