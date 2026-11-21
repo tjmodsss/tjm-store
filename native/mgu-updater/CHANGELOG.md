@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.8.52
+
 - TJM Store: waliworld/MGU-Styles (its branch) is a source too, added once as a default source and allowed. Its app (Toro Cluster) builds and installs unchanged from its own repository, under its own name, icon and credits.
 
 ## 0.8.51
