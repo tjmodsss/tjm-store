@@ -8432,14 +8432,16 @@ function testMguInstallUsbIcons() {
         const r = mguInstall(['usb-repo', stick, `github:${STORE_REPO}`, pub], { bin: installBin(null), api: gh.api });
         const repo = path.join(stick, 'mgu-repo');
         const listed = (name) => (readJson(path.join(repo, name, 'catalog.json')).components || []).reduce((m, c) => Object.assign(m, { [c.id]: c }), {});
-        const store = listed('mgu-store');
+        // the Store's folder on the stick is named after its repository (TJM: tjm-store)
+        const storeDir = STORE_REPO.split('/')[1];
+        const store = listed(storeDir);
         const same = (a, b) => fs.existsSync(a) && fs.readFileSync(a).equals(fs.readFileSync(b));
         check('mgu-install usb-repo: a listed icon is copied beside catalog.json as <id>.png, its entry naming it with its sha256',
-            r.status === 0 && same(path.join(repo, 'mgu-store', 'good_icon.png'), good) && store.good_icon && store.good_icon.icon === 'good_icon.png' &&
+            r.status === 0 && same(path.join(repo, storeDir, 'good_icon.png'), good) && store.good_icon && store.good_icon.icon === 'good_icon.png' &&
             store.good_icon.iconSha256 === sha256(fs.readFileSync(good)) && same(path.join(repo, 'with-icons', 'dir_icon.png'), dirPng) &&
             listed('with-icons').dir_icon.icon === 'dir_icon.png', `${r.out}\n${JSON.stringify(store)}`);
         check('mgu-install usb-repo: an icon that does not match its iconSha256, or is missing, is left out, said, and the stick is written',
-            r.status === 0 && !fs.existsSync(path.join(repo, 'mgu-store', 'bad_icon.png')) && !fs.existsSync(path.join(repo, 'mgu-store', 'gone_icon.png')) &&
+            r.status === 0 && !fs.existsSync(path.join(repo, storeDir, 'bad_icon.png')) && !fs.existsSync(path.join(repo, storeDir, 'gone_icon.png')) &&
             ['bad_icon', 'gone_icon', 'no_icon'].every((id) => store[id] && store[id].icon === undefined && store[id].iconSha256 === undefined) &&
             r.stdout.includes('bad_icon: icon left out (its sha256 does not match the catalog\'s)') && r.stdout.includes('gone_icon: icon left out (') &&
             !r.stdout.includes('no_icon: icon'), r.out);
