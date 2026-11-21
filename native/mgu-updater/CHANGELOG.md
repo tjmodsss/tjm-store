@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- TJM Store: waliworld/MGU-Styles (its branch) is a source too, added once as a default source and allowed. Its app (Toro Cluster) builds and installs unchanged from its own repository, under its own name, icon and credits.
+
 ## 0.8.51
 
 - Downloads, the checked package handed to the deploy tool, and builds on the unit go to RAM when there is room (to storage otherwise), so they are not written to the head unit's storage. Source listings and the updater's state files are written only when they change.

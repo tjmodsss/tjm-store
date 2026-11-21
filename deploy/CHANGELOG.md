@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- TJM: `mgu-install.js` and `sources.json` seed waliworld/MGU-Styles (its branch) as a source too, as the updater adds it.
+
 ## 0.8.27
 
 - Installs write less to the head unit's storage: packages are unpacked, prepared and checked in RAM when there is room (on storage otherwise), a package is written to the system partition once, straight from its file, and a backup links a file that an earlier backup or kept package already holds instead of storing it again.
