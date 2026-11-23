@@ -13,6 +13,7 @@ Upstream merge of 2026-11-16. No change on screen: the renderer client
 it carries can hand an app only some parts of the iDrive controller
 (knob, press or tilt) while the rest stay with the car, and the Store
 works with mgu-render 0.6.23, mgu-deploy 0.8.20 and mgu-updater 0.8.46.
+- Settings → Share usage statistics turns the daily anonymous usage statistics on or off.
 
 ## 0.9.41
 
