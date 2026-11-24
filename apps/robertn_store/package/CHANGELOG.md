@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+Upstream merge of 2026-11-23. Settings has Share usage statistics, which
+turns the daily anonymous usage statistics on or off; the report says
+whether the Store was installed within the last day and where each tool
+version came from. The Store works with mgu-updater 0.8.55 and
+mgu-uplink 0.7.14, which scans for and joins the saved networks on the
+car's wlan0.
+
 ## 0.9.42
 
 Upstream merge of 2026-11-21. Restart now, Restart head unit and the
