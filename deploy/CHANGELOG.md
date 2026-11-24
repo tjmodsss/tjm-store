@@ -2,8 +2,9 @@
 
 ## Unreleased
 
-- TJM: `mgu-install.js` and `sources.json` seed waliworld/MGU-Styles (its branch) as a source too, as the updater adds it.
 ## 0.8.30
+
+- TJM: `mgu-install.js` and `sources.json` seed waliworld/MGU-Styles (its branch) as a source too, as the updater adds it.
 
 - On iDrive 8, a start with the provisioning files, the app list and the app manager's folders as at the last start skips listing our apps again.
 - On iDrive 7, the deploy tool's status run brings an older provisioning fallback boot unit up to date, so its changes apply from the next start without waiting for an app install.

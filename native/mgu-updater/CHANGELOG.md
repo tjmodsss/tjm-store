@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.8.60
+
 - TJM Store: the latest upstream updater, with its usage statistics off (no `stats_url`): TJM's cars send no ping, and the Store shows no switch for it.
 
 ## 0.8.52
