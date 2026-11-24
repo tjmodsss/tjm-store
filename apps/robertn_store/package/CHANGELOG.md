@@ -8,6 +8,18 @@ whether the Store was installed within the last day and where each tool
 version came from. The Store works with mgu-updater 0.8.55 and
 mgu-uplink 0.7.14, which scans for and joins the saved networks on the
 car's wlan0.
+## 0.9.45
+
+- While the updater is installing or has installs waiting, the list stays on screen when it restarts.
+
+## 0.9.44
+
+- A page that stays as it is is not drawn again while it is shown.
+- The Store asks the updater for the catalog texts of its display language only and for download progress on its own, which keeps its memory use lower during installs.
+
+## 0.9.43
+
+- An app whose source was removed names that source's repo.
 
 ## 0.9.42
 

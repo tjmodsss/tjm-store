@@ -2,9 +2,33 @@
 
 ## Unreleased
 
+- TJM Store: the latest upstream updater, with its usage statistics off (no `stats_url`): TJM's cars send no ping, and the Store shows no switch for it.
+
 ## 0.8.52
 
 - TJM Store: waliworld/MGU-Styles (its branch) is a source too, added once as a default source and allowed. Its app (Toro Cluster) builds and installs unchanged from its own repository, under its own name, icon and credits.
+- The updater uses less CPU at start and at each check: downloads close together share one download process, a check reuses the deploy tool's answer from just before, and a start reads the sources once and leaves files that are already right as they are.
+
+## 0.8.60
+
+- The updater runs in the head unit's slice for standard services, so it does not take CPU time ahead of the HMI.
+
+## 0.8.59
+
+- After the updater updates itself, it checks the new version against its built-in source, and against every source only when that one does not answer, and goes on with the queued updates straight away.
+
+## 0.8.58
+
+- A client can ask for the catalog texts of its own language only and for download progress on its own, and the updater checks installed components for changes without reading their files each time.
+
+## 0.8.57
+
+- A new GitHub source's id is made of its owner and repo, so two repos of the same name never share one, and the phone page names each component's source by its repo.
+
+## 0.8.56
+
+- A new source never takes over an installed component of a removed source, and the usage statistics name a component's source only while that source lists it.
+
 ## 0.8.55
 
 - The usage statistics name the source each Store tool's version came from.
