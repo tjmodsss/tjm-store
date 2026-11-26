@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- TJM Store: upstream's deploy tool 0.8.31: `status --json` names the files its answer rests on (#376).
+
 ## 0.8.31
 
 - `status --json` names the files its answer rests on, so a caller can keep the answer until one of them changes.
