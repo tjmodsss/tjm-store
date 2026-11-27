@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.9.46
+
+- Add source takes a catalog address without `https://`.
+
 ## 0.9.45
 
 Upstream merge of 2026-11-23. Settings has Share usage statistics, which
