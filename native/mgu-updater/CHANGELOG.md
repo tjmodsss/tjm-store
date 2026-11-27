@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.8.63
+
 - TJM Store: upstream's updater 0.8.61 and 0.8.62: it asks the deploy tool and app-privacy again only when what their last answers rest on has changed (#376).
 
 ## 0.8.60
